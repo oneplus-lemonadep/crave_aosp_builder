@@ -585,15 +585,23 @@ jobs:
         crave push token.txt -d $(crave ssh -- pwd | grep -v Select | sed -s 's/\r//g')/
         crave ssh -- "export GH_UPLOAD_LIMIT="${{ secrets.GH_UPLOAD_LIMIT }}"; bash /opt/crave/github-actions/upload.sh '${{ github.run_id }}' '${{ github.event.inputs.DEVICE_NAME }}'  '${{ github.repository }}' '${{ github.event.inputs.PRODUCT_NAME }}-${{ github.run_id }}' '${{ secrets.EXTRA_FILES }}'"
 
+    # 下载构建产物到本地工作目录（仅限.zip和.img）
     - name: Download build artifacts
       if: always()
       run: |
         cd $PROJECTFOLDER
+        # 创建存储目录
         mkdir -p artifacts
-        crave pull out/target/product/${{ github.event.inputs.DEVICE_NAME }}/
-        mv out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip artifacts/ || true
-        mv out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.img artifacts/ || true
+        
+        # 仅拉取zip和img文件
+        crave pull "out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip" || true
+        crave pull "out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.img" || true
+        
+        # 移动文件到artifacts目录
+        mv out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip artifacts/ 2>/dev/null || true
+        mv out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.img artifacts/ 2>/dev/null || true
 
+    # 上传到GitHub Actions Artifacts
     - name: Upload to GitHub Artifacts
       uses: actions/upload-artifact@v4
       if: always()
