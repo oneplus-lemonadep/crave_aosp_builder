@@ -592,11 +592,9 @@ jobs:
         cd $PROJECTFOLDER
         # 创建存储目录
         mkdir -p artifacts
-        
         # 仅拉取zip和img文件
-        crave pull "out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip" || true
-        crave pull "out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.img" || true
-        
+        crave pull out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip || true
+        crave pull out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.img || true
         # 移动文件到artifacts目录
         mv out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip artifacts/ || true
         mv out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.img artifacts/ || true
