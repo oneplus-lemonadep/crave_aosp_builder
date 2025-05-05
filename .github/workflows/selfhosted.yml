@@ -594,14 +594,14 @@ jobs:
         mkdir -p artifacts
         cd artifacts
         crave pull out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip
+        crave pull out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.img
 
     # 上传到GitHub Actions Artifacts
     - name: Upload to GitHub Artifacts
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: ${{ github.event.inputs.DEVICE_NAME }}-build
-        path: ${{ env.PROJECTFOLDER }}/artifacts/*
+        path: ${{ env.PROJECTFOLDER }}/artifacts/
         retention-days: 5
         if-no-files-found: warn
 
