@@ -592,9 +592,8 @@ jobs:
         cd $PROJECTFOLDER
         # 创建存储目录并拉取产物文件
         mkdir -p artifacts
+        cd artifacts
         crave pull out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip
-        # 移动文件到artifacts目录
-        mv out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip artifacts/ || true
 
     # 上传到GitHub Actions Artifacts
     - name: Upload to GitHub Artifacts
