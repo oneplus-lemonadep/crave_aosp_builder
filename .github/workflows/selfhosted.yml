@@ -595,7 +595,6 @@ jobs:
         crave pull out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip
         # 移动文件到artifacts目录
         mv out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip artifacts/ || true
-        mv out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.img artifacts/ || true
 
     # 上传到GitHub Actions Artifacts
     - name: Upload to GitHub Artifacts
