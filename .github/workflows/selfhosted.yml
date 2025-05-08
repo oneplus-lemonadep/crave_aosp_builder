@@ -587,16 +587,16 @@ jobs:
 
     - name: Download artifacts from remote
       run: |
-        # 创建本地目录存放产物
+        # 创建统一的存储目录
         mkdir -p artifacts
-        # 从远程拉取构建产物到本地目录
-        cd $PROJECTFOLDER
-        crave pull "out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip" ../artifacts/
-        crave pull "out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.img" ../artifacts/
-        # 显示下载的文件列表
-        ls -lh ../artifacts/
+        # 使用绝对路径从远程拉取（假设远程工作目录为项目根目录）
+        crave pull "$PROJECTFOLDER/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip" artifacts/
+        crave pull "$PROJECTFOLDER/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.img" artifacts/
+        # 显示下载结果
+        ls -lh artifacts/
 
     - name: Upload to GitHub Actions Artifacts
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: ${{ github.event.inputs.DEVICE_NAME }}-build-${{ github.run_id }}
