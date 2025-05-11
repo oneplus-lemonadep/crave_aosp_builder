@@ -588,7 +588,7 @@ jobs:
       # 添加到 build 作业的 steps 部分末尾
     - name: Upload Artifact to GitHub Actions
       if: ${{ success() }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ROM-${{ github.event.inputs.DEVICE_NAME }}-${{ github.run_id }}
         path: ${{ env.PROJECTFOLDER }}/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip
