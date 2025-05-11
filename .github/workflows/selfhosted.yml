@@ -38,19 +38,19 @@ on:
       LOCAL_MANIFEST:
         description: "Personal local manifest [repository or raw]:"
         required: true
-        default: 'https://github.com/sounddrill31/local_manifests_oxygen'
+        default: 'https://raw.githubusercontent.com/oneplus-lemonadep/manifest/fifteen/OnePlus9Series.xml'
       LOCAL_MANIFEST_BRANCH:
         description: "Personal local manifest's branch:"
         required: false
-        default: 'lineage-21-qpr3'
+        default: ''
       DEVICE_NAME:
         description: "Device's codename:"
         required: true
-        default: "oxygen"
+        default: "lemonadep"
       PRODUCT_NAME:
         description: "Product to build:"
         required: true
-        default: "oxygen"
+        default: "lemonadep"
       BUILD_COMMAND:
         description: 'Command to be used for compiling:'
         required: true
@@ -58,7 +58,7 @@ on:
       BUILD_TYPE:
         description: 'Type of build:'
         required: true
-        default: 'userdebug'
+        default: 'user'
         type: choice
         options: 
         - 'eng'
@@ -584,6 +584,16 @@ jobs:
         echo "${{ secrets.GITHUB_TOKEN }}" > token.txt
         crave push token.txt -d $(crave ssh -- pwd | grep -v Select | sed -s 's/\r//g')/
         crave ssh -- "export GH_UPLOAD_LIMIT="${{ secrets.GH_UPLOAD_LIMIT }}"; bash /opt/crave/github-actions/upload.sh '${{ github.run_id }}' '${{ github.event.inputs.DEVICE_NAME }}'  '${{ github.repository }}' '${{ github.event.inputs.PRODUCT_NAME }}-${{ github.run_id }}' '${{ secrets.EXTRA_FILES }}'"
+
+      # 添加到 build 作业的 steps 部分末尾
+    - name: Upload Artifact to GitHub Actions
+      if: ${{ success() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: ROM-${{ github.event.inputs.DEVICE_NAME }}-${{ github.run_id }}
+        path: ${{ env.PROJECTFOLDER }}/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip
+        retention-days: 7
+      continue-on-error: true
         
       # Pull Errors and Display them
     - name: Display error.log
@@ -602,14 +612,6 @@ jobs:
         cd $PROJECTFOLDER
         crave ssh -- "export TG_UPLOAD_LIMIT="${{ secrets.TG_UPLOAD_LIMIT }}"; bash /opt/crave/telegram/upload.sh '${{ github.event.inputs.DEVICE_NAME }}' '${{ secrets.EXTRA_FILES }}'"
       continue-on-error: true
-
-    - name: Upload Artifacts to GitHub Actions
-      if: success()
-      uses: actions/upload-artifact@v4
-      with:
-        name: Build-Artifacts
-        path: ${{ env.PROJECTFOLDER }}/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip
-        retention-days: 7
 
       # Remove 'crave' clone
     - name: Destroy Crave Clone
