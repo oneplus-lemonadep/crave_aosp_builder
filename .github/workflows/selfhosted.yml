@@ -593,7 +593,7 @@ jobs:
          # 拉取构建产物（ZIP 文件）
         crave pull "out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip" -d ./
          # 列出文件以确认拉取成功（调试用）
-         ls -l ${{ env.PROJECTFOLDER }}/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip
+         ls -l ${{ env.PROJECTFOLDER }}/*.zip
 
       # 上传到 GitHub Actions 工作流产物
     - name: Upload Artifact to GitHub Actions
