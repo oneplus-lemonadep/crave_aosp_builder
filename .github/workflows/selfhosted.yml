@@ -601,7 +601,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ROM-${{ github.event.inputs.DEVICE_NAME }}-${{ github.run_id }}
-        path: ${{ env.PROJECTFOLDER }}/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip
+        path: ${{ env.PROJECTFOLDER }}/*.zip
         retention-days: 7
       continue-on-error: true
         
