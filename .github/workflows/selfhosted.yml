@@ -607,6 +607,25 @@ jobs:
         crave push token.txt -d $(crave ssh -- pwd | grep -v Select | sed -s 's/\r//g')/
         crave ssh -- "export GH_UPLOAD_LIMIT="${{ secrets.GH_UPLOAD_LIMIT }}"; bash /opt/crave/github-actions/upload.sh '${{ github.run_id }}' '${{ github.event.inputs.DEVICE_NAME }}'  '${{ github.repository }}' '${{ github.event.inputs.PRODUCT_NAME }}-${{ github.run_id }}' '${{ secrets.EXTRA_FILES }}'"
 
+      # 拉取远程构建产物到本地工作目录
+    - name: Pull build artifacts from crave
+      continue-on-error: true
+      run: |
+        cd $PROJECTFOLDER
+         # 拉取构建产物（ZIP 文件）
+        crave pull "out/target/product/${{ github.event.inputs.DEVICE_NAME }}/*.zip" -d ./
+         # 列出文件以确认拉取成功（调试用）
+         ls -l ${{ env.PROJECTFOLDER }}/*.zip
+      # 上传到 GitHub Actions 工作流产物
+    - name: Upload Artifact to GitHub Actions
+      if: ${{ success() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: ROM-${{ github.event.inputs.DEVICE_NAME }}-${{ github.run_id }}
+        path: ${{ env.PROJECTFOLDER }}/*.zip
+        retention-days: 7
+      continue-on-error: true
+      
       # Pull Errors and Display them
     - name: Display error.log
       if: ${{ failure() }}
